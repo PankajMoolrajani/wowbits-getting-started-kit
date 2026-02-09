@@ -33,18 +33,25 @@ async def browseruse(
     action: str,
     session_id: Optional[str] = None,
     task: Optional[str] = None,
-    instruction: Optional[str] = None
+    instruction: Optional[str] = None,
+    timeout_seconds: Optional[int] = None,
 ) -> Dict[str, Any]:
     """
     Browser automation tool with session management.
-    
+
+    PREFERRED for agents (e.g. Google ADK): use "run_task_and_wait" so one tool call
+    runs the task and returns the result. Avoid "run_task" + repeated "get_status"
+    which causes hundreds of tool calls for a single page.
+
     Args:
-        action: One of "start_session", "run_task", "get_status", "get_result",
-                "pause", "resume", "add_instruction", "update_task", "stop", "stop_session"
+        action: One of "start_session", "run_task", "run_task_and_wait", "get_status",
+                "get_result", "pause", "resume", "add_instruction", "update_task",
+                "stop", "stop_session"
         session_id: Session ID (required for all actions except start_session)
-        task: Task description (required for run_task)
+        task: Task description (required for run_task and run_task_and_wait)
         instruction: Additional instruction (required for add_instruction and update_task)
-    
+        timeout_seconds: Max wait in seconds for run_task_and_wait (default 120).
+
     Returns:
         Dictionary with status/result/error
     """
@@ -111,6 +118,71 @@ async def browseruse(
             "status": "running",
             "message": "Task started in background. Poll with get_status, use pause/resume/update_task as needed."
         }
+
+    # ==================== RUN TASK AND WAIT (BLOCKING – use this to avoid 100s of tool calls) ====================
+    if action == "run_task_and_wait":
+        if not task:
+            return {"error": "task argument is required for run_task_and_wait"}
+
+        if session.status == "running":
+            return {"error": "A task is already running. Stop it first or use get_status/get_result."}
+
+        timeout = timeout_seconds if timeout_seconds is not None else 120
+        session.original_task = task
+        session.current_task = task
+
+        async def agent_runner(task_to_run: str):
+            try:
+                llm = ChatOpenAI(model="gpt-4o-mini")
+                session.agent = Agent(
+                    task=task_to_run,
+                    llm=llm,
+                    browser=session.browser,
+                )
+                session.log(f"Running task (blocking): {task_to_run}")
+                history = await session.agent.run()
+                session.result = history
+                session.status = "completed"
+                session.log("Task completed successfully")
+            except asyncio.CancelledError:
+                session.status = "stopped"
+                session.log("Task was stopped")
+            except Exception as e:
+                session.status = "failed"
+                session.result = str(e)
+                session.log(f"Task failed: {e}")
+
+        session.task_handle = asyncio.create_task(agent_runner(task))
+        session.status = "running"
+
+        try:
+            await asyncio.wait_for(session.task_handle, timeout=float(timeout))
+        except asyncio.TimeoutError:
+            session.log(f"Task still running after {timeout}s (timeout). Use get_status/get_result later.")
+            return {
+                "status": "timeout",
+                "session_id": session_id,
+                "message": f"Task did not finish within {timeout}s. Call get_status or get_result later with this session_id.",
+            }
+
+        if session.status == "completed":
+            return {
+                "status": "completed",
+                "result": str(session.result),
+                "message": "Task completed.",
+            }
+        elif session.status == "failed":
+            return {
+                "status": "failed",
+                "error": str(session.result),
+                "message": "Task failed.",
+            }
+        else:
+            return {
+                "status": session.status,
+                "result": str(session.result) if session.result else None,
+                "message": f"Task ended with status: {session.status}.",
+            }
 
     # ==================== GET STATUS ====================
     elif action == "get_status":
