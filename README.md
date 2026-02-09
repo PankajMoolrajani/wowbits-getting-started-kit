@@ -63,6 +63,18 @@ Get Google search results programmatically using SerpAPI. Access organic results
 
 ## 🎯 Quick Start
 
+### Try the Examples
+
+The repository includes ready-to-run example scripts:
+
+```bash
+# Run SERP API examples
+python3 example_serp_api.py
+
+# Run Browser Tool examples
+python3 example_browser_tool.py
+```
+
 ### Using the Browser Tool
 
 ```python
@@ -174,6 +186,8 @@ wowbits-getting-started-kit/
 ├── agent_runner/           # Agent execution environment
 ├── agent_studio/           # Agent configuration
 ├── data/                   # Data storage
+├── example_browser_tool.py # Browser tool usage examples
+├── example_serp_api.py     # SERP API usage examples
 └── README.md              # This file
 ```
 
