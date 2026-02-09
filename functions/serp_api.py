@@ -150,7 +150,7 @@ async def serp_api(
         if not query or not query.strip():
             return {"error": "Query cannot be empty", "status": "error"}
 
-        if num_results and (num_results < 1 or num_results > 100):
+        if num_results is not None and (num_results < 1 or num_results > 100):
             return {"error": "num_results must be between 1 and 100", "status": "error"}
 
         # Check for API key

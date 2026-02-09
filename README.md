@@ -151,7 +151,7 @@ asyncio.run(main())
 Each tool has detailed documentation in the `functions/` directory:
 
 - [Browser Tool Documentation](functions/browser_tool.md) - Complete guide for browser automation
-- [SERP API Documentation](functions/serp_api.md) - Complete guide for Google search
+- [SERP API Documentation](functions/serp_api.md) - Complete guide for Google Search
 
 ## 🔑 API Keys
 
