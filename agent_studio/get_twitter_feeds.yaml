@@ -1,0 +1,13 @@
+kind: agent
+name: get_twitter_feeds
+description: Get the latest tweets from a given Twitter handle
+tools:
+  - name: get_twitter_feeds
+    description: Get the latest tweets from a given Twitter handle
+    tool:
+      type: function
+      function: get_twitter_feeds
+      arguments:
+        - name: twitter_handle
+          description: The Twitter handle to get the latest tweets from
+          type: string
