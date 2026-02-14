@@ -1,0 +1,6 @@
+kind: mcp_config
+config: 
+  name: playwright
+  url: http://localhost:8931
+  config: 
+    transport_mode: http
