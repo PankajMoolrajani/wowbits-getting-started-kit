@@ -1,11 +1,11 @@
 {
-    "mcps": [
-        {
-            "name": "shodan",
-            "config": {
-                "api_key": "your_api_key_here",
-                "transport_mode": "http"
-            },
-        }
-    ]
+  "mcps": [
+    {
+      "name": "playwright",
+      "config": {
+        "url": "http://localhost:8931",
+        "transport_mode": "http"
+      }
+    }
+  ]
 }
