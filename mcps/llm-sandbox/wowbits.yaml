@@ -1,0 +1,6 @@
+kind: mcp_config
+config:
+  name: llm-sandbox
+  url: http://localhost:8932
+  config:
+    transport_mode: stdio
