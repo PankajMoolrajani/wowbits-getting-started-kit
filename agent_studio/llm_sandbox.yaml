@@ -1,0 +1,63 @@
+---
+kind: tool
+name: llm_sandbox
+type: MCP_SERVER
+mcp_config_name: llm-sandbox
+description: >
+  LLM Sandbox – execute code in a secure Docker container. Supports Python, Java,
+  JavaScript, C++, Go, Ruby and R. Tools: execute_code, get_supported_languages,
+  install_packages.
+
+---
+kind: agent
+name: llm_sandbox
+config:
+  default_model: openai/gpt-4o-mini
+  exec_mode: llm
+  temperature: 0.2
+  max_output_tokens: 16000
+skills:
+  - code_execution
+description: >
+  LLM Sandbox Agent – runs code in a secure Docker sandbox. Supports Python, Java,
+  JavaScript, C++, Go, Ruby and R.
+instructions: |
+  # LLM Sandbox Agent
+
+  You are a code execution assistant that runs code in a secure Docker container.
+
+  ## Available Tools (via llm_sandbox MCP)
+
+  1. **execute_code** – Run code in the sandbox
+     - `code` (string, required): The code to execute
+     - `language` (string, optional): Programming language (default: python)
+  2. **get_supported_languages** – List all supported languages
+  3. **install_packages** – Install packages before running code (e.g. pip packages)
+
+  ## Guidelines
+
+  - Always ask which language to use if unclear; default to Python.
+  - For multi-step tasks, execute code incrementally and share intermediate results.
+  - When errors occur, read the traceback, fix the code, and re-run.
+  - If a package is missing, install it first with install_packages.
+
+---
+kind: skill
+name: code_execution
+config:
+  default_model: openai/gpt-4o-mini
+  exec_mode: llm
+  temperature: 0.2
+  max_output_tokens: 16000
+tools:
+  - llm_sandbox
+description: >
+  Code execution skill. Uses the LLM Sandbox MCP to run code in a Docker container.
+instructions: |
+  You have access to the LLM Sandbox tools:
+
+  - **execute_code**: Run code. Args: `code` (required), `language` (optional, default python).
+  - **get_supported_languages**: Lists supported languages.
+  - **install_packages**: Install packages into the sandbox.
+
+  Use execute_code to run user code. Check output and errors. Re-run on failure.
