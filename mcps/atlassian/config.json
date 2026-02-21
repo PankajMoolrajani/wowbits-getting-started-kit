@@ -1,0 +1,9 @@
+{
+    "remote_server_url": "https://mcp.atlassian.com/v1/sse",
+    "local_proxy": {
+        "port": 8932,
+        "host": "localhost"
+    },
+    "transport_mode": "sse",
+    "description": "Atlassian Remote MCP Server - Jira and Confluence integration via mcp-remote proxy"
+}
