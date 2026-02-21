@@ -2,9 +2,9 @@
 """
 Run the Memento Protocol MCP server via supergateway (STDIO → SSE bridge).
 
-This script:
-1. Loads environment variables from the project .env
-2. Launches supergateway to wrap the Memento MCP (STDIO) as an SSE server on port 8932
+Uses the remote Memento API via `npx memento-mcp` — no local repo clone needed.
+Environment variables (MEMENTO_API_KEY, MEMENTO_API_URL, MEMENTO_WORKSPACE)
+are loaded from the project .env file.
 """
 
 import subprocess
@@ -32,15 +32,6 @@ with open(config_path) as f:
 port = config["server"]["port"]
 host = config["server"]["host"]
 
-# Path to the memento-protocol repo (cloned by setup.py)
-memento_repo = Path(__file__).resolve().parent / "memento-protocol"
-index_js = memento_repo / "src" / "index.js"
-
-if not index_js.exists():
-    print(f"❌ Memento Protocol not found at {index_js}")
-    print("   Run 'python setup.py' first to clone and install the repo.")
-    exit(1)
-
 # Verify required env vars
 api_key = os.environ.get("MEMENTO_API_KEY")
 if not api_key:
@@ -50,22 +41,25 @@ if not api_key:
     print('     -d \'{"workspace": "wowbits-project"}\'')
     exit(1)
 
-print(f"🚀 Starting Memento MCP server via supergateway on {host}:{port}")
-print(f"   Memento repo: {memento_repo}")
-print(f"   API URL: {os.environ.get('MEMENTO_API_URL', 'https://memento-api.myrakrusemark.workers.dev')}")
-print(f"   Workspace: {os.environ.get('MEMENTO_WORKSPACE', 'wowbits-project')}")
+api_url = os.environ.get("MEMENTO_API_URL", "https://memento-api.myrakrusemark.workers.dev")
+workspace = os.environ.get("MEMENTO_WORKSPACE", "wowbits-project")
+
+print(f"🚀 Starting Memento MCP server (remote) via supergateway on {host}:{port}")
+print(f"   Using: npx memento-mcp (remote API)")
+print(f"   API URL: {api_url}")
+print(f"   Workspace: {workspace}")
 
 # Build environment for the subprocess
 env = os.environ.copy()
 env["MEMENTO_API_KEY"] = api_key
-env["MEMENTO_API_URL"] = os.environ.get("MEMENTO_API_URL", "https://memento-api.myrakrusemark.workers.dev")
-env["MEMENTO_WORKSPACE"] = os.environ.get("MEMENTO_WORKSPACE", "wowbits-project")
+env["MEMENTO_API_URL"] = api_url
+env["MEMENTO_WORKSPACE"] = workspace
 
-# Use supergateway to bridge STDIO → SSE
+# Use supergateway to bridge npx memento-mcp (STDIO) → SSE
 subprocess.run(
     [
         "npx", "-y", "supergateway",
-        "--stdio", f"node {index_js}",
+        "--stdio", "npx -y memento-mcp",
         "--port", str(port),
         "--host", host,
     ],

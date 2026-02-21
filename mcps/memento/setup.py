@@ -1,65 +1,47 @@
 #!/usr/bin/env python3
 """
-One-time setup for the Memento Protocol MCP server.
+Setup for the Memento Protocol MCP server (remote mode).
 
-This script:
-1. Clones the memento-protocol GitHub repo
-2. Runs npm install in the cloned repo
-3. Verifies supergateway is available via npx
+Uses the remote Memento API via `npx memento-mcp` — no local repo clone needed.
+This script just verifies prerequisites (Node.js, npm) and reminds about API key setup.
 """
 
 import subprocess
 import sys
-from pathlib import Path
-
-REPO_URL = "https://github.com/myrakrusemark/memento-protocol.git"
-SCRIPT_DIR = Path(__file__).resolve().parent
-MEMENTO_DIR = SCRIPT_DIR / "memento-protocol"
 
 
-def run_cmd(cmd, cwd=None, description=""):
-    """Run a command and handle errors."""
-    print(f"  ⏳ {description}...")
-    result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-    if result.returncode != 0:
-        print(f"  ❌ Failed: {description}")
-        print(f"     stdout: {result.stdout}")
-        print(f"     stderr: {result.stderr}")
-        sys.exit(1)
-    print(f"  ✅ {description}")
-    return result
+def check_command(cmd, description):
+    """Check if a command is available."""
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, text=True
+        )
+        version = result.stdout.strip()
+        print(f"  ✅ {description}: {version}")
+        return True
+    except FileNotFoundError:
+        print(f"  ❌ {description}: NOT FOUND")
+        return False
 
 
 def main():
     print("\n╔═══════════════════════════════════════════════════════════════╗")
-    print("║         Memento Protocol MCP Server Setup                    ║")
+    print("║     Memento Protocol MCP Server Setup (Remote Mode)         ║")
     print("╚═══════════════════════════════════════════════════════════════╝\n")
 
-    # Step 1: Clone the repo
-    if MEMENTO_DIR.exists():
-        print(f"📁 Memento Protocol repo already exists at {MEMENTO_DIR}")
-        print("   Pulling latest changes...")
-        run_cmd(
-            ["git", "pull"],
-            cwd=str(MEMENTO_DIR),
-            description="Pulling latest changes"
-        )
-    else:
-        print(f"📥 Cloning Memento Protocol repo...")
-        run_cmd(
-            ["git", "clone", REPO_URL, str(MEMENTO_DIR)],
-            description="Cloning memento-protocol repository"
-        )
+    # Step 1: Verify prerequisites
+    print("🔍 Checking prerequisites...\n")
+    
+    ok = True
+    ok = check_command(["node", "--version"], "Node.js") and ok
+    ok = check_command(["npm", "--version"], "npm") and ok
 
-    # Step 2: Install npm dependencies
-    print("\n📦 Installing npm dependencies...")
-    run_cmd(
-        ["npm", "install"],
-        cwd=str(MEMENTO_DIR),
-        description="Installing npm dependencies"
-    )
+    if not ok:
+        print("\n❌ Missing prerequisites. Please install Node.js first.")
+        print("   https://nodejs.org/")
+        sys.exit(1)
 
-    # Step 3: Verify supergateway is available
+    # Step 2: Verify supergateway is available
     print("\n🔧 Verifying supergateway availability...")
     result = subprocess.run(
         ["npx", "-y", "supergateway", "--help"],
@@ -68,11 +50,23 @@ def main():
     if result.returncode == 0:
         print("  ✅ supergateway is available via npx")
     else:
-        print("  ⚠️  supergateway not readily available, will be auto-installed on first run via npx -y")
+        print("  ⚠️  supergateway will be auto-installed on first run via npx -y")
+
+    # Step 3: Verify memento-mcp is available
+    print("\n🧠 Verifying memento-mcp availability...")
+    result = subprocess.run(
+        ["npx", "-y", "memento-mcp", "--help"],
+        capture_output=True, text=True,
+        timeout=30
+    )
+    if result.returncode == 0:
+        print("  ✅ memento-mcp is available via npx")
+    else:
+        print("  ⚠️  memento-mcp will be auto-installed on first run via npx -y")
 
     # Step 4: Remind about API key
     print("\n" + "=" * 60)
-    print("✅ Setup complete!")
+    print("✅ Setup complete! (No local clone needed — uses remote API)")
     print("=" * 60)
     print("\n📋 Next steps:")
     print("   1. Sign up for a Memento API key (if you haven't already):")

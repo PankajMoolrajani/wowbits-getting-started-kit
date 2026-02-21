@@ -4,11 +4,13 @@
         "host": "localhost"
     },
     "memento": {
+        "mode": "remote",
         "api_url": "https://memento-api.myrakrusemark.workers.dev",
         "workspace": "wowbits-project"
     },
     "transport": {
         "mode": "sse",
-        "bridge": "supergateway"
+        "bridge": "supergateway",
+        "command": "npx -y memento-mcp"
     }
 }
