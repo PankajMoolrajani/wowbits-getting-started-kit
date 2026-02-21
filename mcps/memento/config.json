@@ -1,0 +1,14 @@
+{
+    "server": {
+        "port": 8932,
+        "host": "localhost"
+    },
+    "memento": {
+        "api_url": "https://memento-api.myrakrusemark.workers.dev",
+        "workspace": "wowbits-project"
+    },
+    "transport": {
+        "mode": "sse",
+        "bridge": "supergateway"
+    }
+}
