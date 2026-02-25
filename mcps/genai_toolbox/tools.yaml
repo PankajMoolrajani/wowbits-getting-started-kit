@@ -33,19 +33,12 @@ parameters:
 ---
 kind: tools
 name: query-table
-type: sqlite-sql
+type: sqlite-execute-sql
 source: wowbits-sqlite
 description: >
   Run a read-only SQL SELECT query against the database.
   Use this tool to retrieve data from any table. Always use SELECT statements only.
   Example: {"sql": "SELECT * FROM agents LIMIT 10"}
-statement: |
-  {{.sql}}
-templateParameters:
-  - name: sql
-    type: string
-    description: >
-      The SQL SELECT query to execute. Must be a read-only SELECT statement.
 
 ---
 kind: tools
