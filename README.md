@@ -131,6 +131,7 @@ Run `pip install -r functions/requirements.txt`. Put `OPENAI_API_KEY` (and `SERP
 | Symptom | What to do |
 |--------|------------|
 | `WOWBITS_ROOT_DIR` not set | Run `wowbits setup` or set it (e.g. in `.env` or shell rc). |
+| `Cannot reach API: connection refused` / `WOWBITS_API_URL` not set | Start the API: `wowbits start` (port 8000). Set `WOWBITS_API_URL=http://localhost:8000` in `.env`. |
 | Agent create fails on “invalid kind” | Use `kind: wowbits_tool`, `kind: wowbits_skill`, `kind: wowbits_agent` in your YAML. |
 | “Python function 'X' not found” | Run `wowbits create function` so `functions/` is scanned and registered. |
 | Agent needs a model/API | Run `wowbits create connector --provider openai` (or the provider your agent uses). |

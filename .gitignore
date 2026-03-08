@@ -209,3 +209,10 @@ __marimo__/
 
 # Sqlite db
 *.db
+
+# WowBits agent runner
+agent_runner/
+
+# Process and log files
+*.pid
+*.log
