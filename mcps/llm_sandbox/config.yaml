@@ -1,4 +1,4 @@
-kind: mcp_config
+kind: wowbits_mcp_config
 config:
   name: llm_sandbox
   url: null
