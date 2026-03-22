@@ -218,4 +218,5 @@ agent_runner/
 
 # Process and log files
 *.pid
+logs/
 *.log
