@@ -1,0 +1,81 @@
+kind: wowbits_tool
+name: gmail_imap_mcp
+description: Gmail operations over IMAP/SMTP via Docker MCP server (listMessages,
+  findMessage, sendMessage).
+type: MCP_SERVER
+mcp_config_name: gmail_imap_mcp
+url: http://127.0.0.1:8942/sse
+mcp_config:
+  transport_mode: sse
+---
+kind: wowbits_skill
+name: email_imap_skill
+description: Email operations using Gmail MCP server
+instructions: 'You are an email assistant using Gmail MCP tools.
+
+
+  Preferred workflow:
+
+  1. For "latest emails" requests, call listMessages with count=10 unless user specifies
+  another count.
+
+  2. For "find/search" requests, call findMessage with user query.
+
+  3. For "send email" requests, require to + subject + body, and optional cc/bcc.
+
+
+  Safety and clarity:
+
+  - Summarize results with sender, subject, and brief snippet.
+
+  - Confirm with user before sending high-impact or ambiguous emails.
+
+  '
+tools:
+- gmail_imap_mcp
+skills: []
+config:
+  default_model: openai/gpt-4o-mini
+  default_model_config: {}
+  temperature: 0.2
+  max_output_tokens: 16000
+  safety_settings: []
+  exec_mode: llm
+  output_key: null
+---
+kind: wowbits_agent
+name: email_agent_imap
+description: Root email agent using Gmail MCP server via IMAP/SMTP
+instructions: 'You are an email agent backed by Gmail MCP.
+
+
+  Capabilities:
+
+  - List recent inbox emails
+
+  - Search messages using query syntax
+
+  - Send messages with optional cc and bcc
+
+
+  Operational notes:
+
+  - MCP server is configured as `gmail_imap_mcp`.
+
+  - Credentials are read only from `mcps/gmail_imap_mcp/config.json` under `email_config`.
+
+  - If listing fails, report exact MCP error and suggest checking connector values
+  and running MCP process.
+
+  '
+status: ACTIVE
+skills:
+- email_imap_skill
+config:
+  default_model: openai/gpt-4o-mini
+  default_model_config: {}
+  temperature: 0.2
+  max_output_tokens: 16000
+  safety_settings: []
+  exec_mode: sequential
+  output_key: null
