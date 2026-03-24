@@ -1,0 +1,14 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8942
+  },
+  "email_config": {
+    "email": "aarohan.sanketk@gmail.com",
+    "password": "pzlg yikc rcyf kvby",
+    "imap_server": "imap.gmail.com",
+    "imap_port": 993,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587
+  }
+}

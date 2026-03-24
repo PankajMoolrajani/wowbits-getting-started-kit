@@ -220,3 +220,6 @@ agent_runner/
 *.pid
 logs/
 *.log
+
+data/
+*db

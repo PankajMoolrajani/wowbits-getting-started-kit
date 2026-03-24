@@ -1,0 +1,6 @@
+kind: wowbits_mcp_config
+config:
+  name: gmail_imap_mcp
+  url: http://127.0.0.1:8942/sse
+  config:
+    transport_mode: sse
